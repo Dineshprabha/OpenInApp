@@ -9,4 +9,19 @@
         android:name="com.dinesh.openinapp.dashboard.ui.fragments.HomeFragment"
         android:label="fragment_home"
         tools:layout="@layout/fragment_home" />
+    <fragment
+        android:id="@+id/courseFragment2"
+        android:name="com.dinesh.openinapp.dashboard.ui.fragments.CourseFragment"
+        android:label="fragment_course"
+        tools:layout="@layout/fragment_course" />
+    <fragment
+        android:id="@+id/campaignFragment2"
+        android:name="com.dinesh.openinapp.dashboard.ui.fragments.CampaignFragment"
+        android:label="fragment_campaign"
+        tools:layout="@layout/fragment_campaign" />
+    <fragment
+        android:id="@+id/profileFragment2"
+        android:name="com.dinesh.openinapp.dashboard.ui.fragments.ProfileFragment"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_profile" />
 </navigation>
