@@ -52,12 +52,12 @@ class TopLinkFragment : Fragment() {
     }
 
     private fun setupObserver() {
-        viewModel.userClickLiveData.observe(viewLifecycleOwner, Observer {
+        viewModel.data.observe(viewLifecycleOwner, Observer {
             when (it) {
                 is NetworkResult.Success -> {
                     if (it.data != null) {
-                        val userClickResponse: DashboardResponse = it.data
-                        linkAdapter.differ.submitList(userClickResponse.data.top_links)
+                        val dashboardResponse: DashboardResponse = it.data
+                        linkAdapter.differ.submitList(dashboardResponse.data.top_links)
                     }
                 }
 

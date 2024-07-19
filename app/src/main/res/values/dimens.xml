@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="fab_cradle_rounded_corner_radius">28dp</dimen>
+    <dimen name="fab_cradle_vertical_offset">10dp</dimen>
+</resources>

@@ -139,11 +139,11 @@
 
                             </RelativeLayout>
 
-<!--                            <com.github.mikephil.charting.charts.LineChart-->
-<!--                                android:id="@+id/lineChart"-->
-<!--                                android:layout_width="match_parent"-->
-<!--                                android:layout_height="match_parent"-->
-<!--                                android:layout_below="@id/rl_chart"/>-->
+                            <com.github.mikephil.charting.charts.LineChart
+                                android:id="@+id/lineChart"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_below="@id/rl_chart"/>
 
                         </RelativeLayout>
 

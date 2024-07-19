@@ -80,7 +80,12 @@ dependencies {
 
     implementation("com.google.code.gson:gson:2.8.9")
 
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+
     kapt("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.8.0")
+
+    implementation("com.google.android.material:material:1.12.0")
+
 }
 
 kapt {

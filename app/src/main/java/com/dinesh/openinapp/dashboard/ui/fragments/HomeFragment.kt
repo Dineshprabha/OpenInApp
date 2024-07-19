@@ -1,5 +1,6 @@
 package com.dinesh.openinapp.dashboard.ui.fragments
 
+import android.graphics.Color
 import android.icu.util.Calendar
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,19 +13,27 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dinesh.openinapp.R
-import com.dinesh.openinapp.dashboard.DashboardItemAdapter
+import com.dinesh.openinapp.dashboard.adapter.DashboardItemAdapter
 import com.dinesh.openinapp.dashboard.adapter.TabLayoutAdapter
 import com.dinesh.openinapp.dashboard.model.DashboardItem
 import com.dinesh.openinapp.dashboard.model.DashboardResponse
+import com.dinesh.openinapp.dashboard.model.OverallUrlChart
 import com.dinesh.openinapp.dashboard.ui.fragments.home.RecentLinkFragment
 import com.dinesh.openinapp.dashboard.ui.fragments.home.TopLinkFragment
 import com.dinesh.openinapp.dashboard.viewmodel.MainViewModel
 import com.dinesh.openinapp.databinding.FragmentHomeBinding
 import com.dinesh.openinapp.utils.AppConstants.BEARER_TOKEN
+import com.dinesh.openinapp.utils.DateAxisValueFormatter
 import com.dinesh.openinapp.utils.NetworkResult
 import com.dinesh.openinapp.utils.TokenManager
+import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
+import java.text.SimpleDateFormat
+import java.util.Locale
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -52,7 +61,6 @@ class HomeFragment : Fragment() {
 
         tokenManager.saveToken(BEARER_TOKEN)
 
-        val greetingMessage = getGreetingMessage()
         binding.tvGreetings.text = getGreetingMessage()
 
         viewModel.fetchData()
@@ -96,13 +104,14 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupObserver() {
-        viewModel.userClickLiveData.observe(viewLifecycleOwner, Observer {
+        viewModel.data.observe(viewLifecycleOwner, Observer {
             when (it) {
                 is NetworkResult.Success -> {
                     if (it.data != null) {
-                        val userClickResponse: DashboardResponse = it.data
-                        setupDashboardItemData(userClickResponse)
-//                        val overallUrlChart : OverallUrlChart = userClickResponse.data.overall_url_chart
+                        val dashboardResponse: DashboardResponse = it.data
+                        setupDashboardItemData(dashboardResponse)
+                        val overallUrlChart: OverallUrlChart =
+                            dashboardResponse.data.overall_url_chart
 //                        chartData = extractChartData(overallUrlChart)
 //                        populatelineChart(chartData)
                     }
@@ -122,14 +131,58 @@ class HomeFragment : Fragment() {
         })
     }
 
+    private fun populatelineChart(chartData: Map<String, Int>) {
 
-//    fun extractChartData(overallUrlChart: OverallUrlChart): Map<String, Int> {
-//        val properties = OverallUrlChart::class.java.declaredFields
-//        return properties.associate {
-//            it.isAccessible = true
-//            it.name to it.getInt(overallUrlChart)
-//        }
-//    }
+        // Extract data from your JSON-like structure
+        val data = chartData
+
+        // Create entries for the chart
+        val entries = ArrayList<Entry>()
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val calendar = Calendar.getInstance()
+
+        for ((date, value) in data) {
+            calendar.time = dateFormat.parse(date)!!
+
+            // Convert date to timestamp for X-axis
+            val timestamp = calendar.timeInMillis.toFloat()
+            entries.add(Entry(timestamp, value.toFloat()))
+        }
+
+        // Create a dataset with entries
+        val dataSet = LineDataSet(entries, "Overall URL Chart")
+        dataSet.color = Color.BLUE
+        dataSet.valueTextColor = Color.BLACK
+
+        // Create a LineData object with the dataset
+        val lineData = LineData(dataSet)
+
+        val lineChart = binding.lineChart
+        // Set up X-axis with date labels
+        val xAxis: XAxis = lineChart.xAxis
+        xAxis.valueFormatter = DateAxisValueFormatter()
+        xAxis.position = XAxis.XAxisPosition.BOTTOM
+        xAxis.granularity = 1f
+        xAxis.labelRotationAngle = -45f
+
+        // Set up chart properties
+        lineChart.data = lineData
+        lineChart.description.isEnabled = false
+        lineChart.setTouchEnabled(true)
+        lineChart.isDragEnabled = true
+        lineChart.setScaleEnabled(true)
+        lineChart.invalidate()
+
+    }
+
+
+    fun extractChartData(overallUrlChart: OverallUrlChart): Map<String, Int> {
+        val properties = OverallUrlChart::class.java.declaredFields
+        return properties.associate {
+            it.isAccessible = true
+            it.name to it.getInt(overallUrlChart)
+        }
+    }
 
     private fun setupDashboardItemData(userClickResponse: DashboardResponse) {
         dashboardItemList.add(
@@ -155,7 +208,7 @@ class HomeFragment : Fragment() {
         )
         dashboardItemList.add(
             DashboardItem(
-                R.drawable.avathar_one,
+                R.drawable.avathar_four,
                 userClickResponse.startTime.toString(),
                 "Best Time"
             )

@@ -27,14 +27,6 @@ class RecentLinkFragment : Fragment() {
     private val viewModel by viewModels<MainViewModel>()
     private val recentLinkAdapter by lazy { RecentLinkAdapter() }
 
-    @Inject
-    lateinit var tokenManager: TokenManager
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        tokenManager = TokenManager(requireContext())
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -46,7 +38,6 @@ class RecentLinkFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        tokenManager.saveToken(AppConstants.BEARER_TOKEN)
         viewModel.fetchData()
         setupTopLinkRV()
         setupObserver()
@@ -60,12 +51,16 @@ class RecentLinkFragment : Fragment() {
     }
 
     private fun setupObserver() {
-        viewModel.userClickLiveData.observe(viewLifecycleOwner, Observer {
+        viewModel.data.observe(viewLifecycleOwner, Observer {
             when (it) {
+                is NetworkResult.Loading -> {
+
+                }
+
                 is NetworkResult.Success -> {
                     if (it.data != null) {
-                        val userClickResponse: DashboardResponse = it.data
-                        recentLinkAdapter.differ.submitList(userClickResponse.data.recent_links)
+                        val dashboardResponse: DashboardResponse = it.data
+                        recentLinkAdapter.differ.submitList(dashboardResponse.data.recent_links)
                     }
                 }
 
@@ -73,11 +68,6 @@ class RecentLinkFragment : Fragment() {
                     Toast.makeText(requireContext(), it.message.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }
-
-                is NetworkResult.Loading -> {
-
-                }
-
                 else -> Unit
             }
         })
