@@ -26,5 +26,6 @@ class MainActivity : AppCompatActivity() {
         bottomNavigationView.getOrCreateBadge(R.id.homeFragment).apply {
             backgroundColor = resources.getColor(R.color.g_blue)
         }
+
     }
 }
